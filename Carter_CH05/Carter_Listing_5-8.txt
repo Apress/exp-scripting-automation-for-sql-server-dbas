@@ -1,0 +1,1 @@
+@[User::SQLText] = "RESTORE VERIFYONLY FROM DISK = '" +  @[User::Name] + ".bak'"

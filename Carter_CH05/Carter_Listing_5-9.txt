@@ -1,0 +1,1 @@
+@[User::SQLText] = "BACKUP DATABASE " +  @[User::Name] + " TO DISK = '" +  @[User::Name] + "'"

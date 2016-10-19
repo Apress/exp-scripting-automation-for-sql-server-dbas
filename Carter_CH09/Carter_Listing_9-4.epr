@@ -1,0 +1,1 @@
+"RESTORE DATABASE " +  @[$Project::DatabaseName] + " FROM DISK = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL13.MSSQLSERVER\\MSSQL\\Backup\\" + @[$Project::DatabaseName] + ".bak' WITH REPLACE; GO ALTER DATABASE " + @[$Project::DatabaseName] + "SET SINGLE_USER WITH ROLLBACK IMMEDIATE;"

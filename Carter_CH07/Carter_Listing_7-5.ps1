@@ -1,0 +1,1 @@
+.\SETUP.EXE /INSTANCENAME=$InstanceName /SQLSYSADMINACCOUNTS=$Administrators /SQLSVCACCOUNT=$SQLServiceAccount /SQLSVCPASSWORD=$SQLServiceAccountPassword /AGTSVCACCOUNT=$AgentServiceAccount /AGTSVCPASSWORD=$AgentServiceAccountPassword /CONFIGURATIONFILE="./ConfigurationFile.ini" 

@@ -1,0 +1,1 @@
+EXEC sp_MSforeachDB 'DBCC CHECKDB (?)' ;

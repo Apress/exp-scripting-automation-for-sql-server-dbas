@@ -1,0 +1,4 @@
+@[User::SQLText] = 
+    "ALTER DATABASE " + @[User:DatabaseName] + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE; 
+     DBCC CHECKDB (" + @[User:DatabaseName] + ",REPAIR_REBUILD); 
+     ALTER DATABASE " + @[User:DatabaseName] + " SET MULTI_USER;"

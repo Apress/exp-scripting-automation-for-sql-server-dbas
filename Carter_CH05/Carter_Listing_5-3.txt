@@ -1,0 +1,12 @@
+@[User::NotificationBody] =  
+    SUBSTRING(@[User::NotificationBody] 
+        +  @[User::TableName] 
+        + "in database " 
+        +  @[User::DatabaseName] 
+        + ","
+   , 1 
+   , LEN(@[User::NotificationBody] 
+        +  @[User::TableName] 
+        + "in database " 
+        +  @[User::DatabaseName] 
+        + ",") - 1)

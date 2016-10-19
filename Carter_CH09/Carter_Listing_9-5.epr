@@ -1,0 +1,45 @@
+"DECLARE @SQL NVARCHAR(MAX) ;
+
+SET @SQL = (SELECT CASE t.name WHEN 'int' THEN 'UPDATE ' + SCHEMA_NAME(o.schema_id) + '.' + QUOTENAME(OBJECT_NAME(nkc.object_id)) + ' SET ' +  QUOTENAME(c.name) + ' = CHECKSUM(' + c.name + '); ' 
+WHEN 'money' THEN 'UPDATE ' + QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(nkc.object_id)) + ' SET ' +  QUOTENAME(c.name) + ' = CHECKSUM(' + c.name + '); ' 
+WHEN 'nvarchar' THEN 'UPDATE ' + QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(nkc.object_id)) + ' SET ' +  QUOTENAME(c.name) + ' = LEFT(RTRIM(CONVERT(nvarchar(255), NEWID())), ' + CAST(c.max_length / 2 AS NVARCHAR(10)) + '); ' 
+WHEN 'varchar' THEN 'UPDATE ' + QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(nkc.object_id)) + ' SET ' +  QUOTENAME(c.name) + ' = LEFT(RTRIM(CONVERT(nvarchar(255), NEWID())), ' + CAST(c.max_length AS NVARCHAR(10)) + '); ' 
+WHEN 'text' THEN 'UPDATE ' + QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(nkc.object_id)) + ' SET ' +  QUOTENAME(c.name) + ' = LEFT(RTRIM(CONVERT(nvarchar(255), NEWID())), ' + CAST(c.max_length AS NVARCHAR(10)) + '); ' 
+WHEN 'ntext' THEN 'UPDATE ' + QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(nkc.object_id)) + ' SET ' +  QUOTENAME(c.name) + ' = LEFT(RTRIM(CONVERT(nvarchar(255), NEWID())), ' + CAST(c.max_length AS NVARCHAR(10)) + '); '  END
+FROM
+(
+	SELECT object_id, column_id
+	FROM sys.columns 
+	EXCEPT --Exclude foreign key columns
+	SELECT parent_object_id, parent_column_id
+	FROM sys.foreign_key_columns
+	EXCEPT --Exclude check constraints
+	SELECT parent_object_id, parent_column_id
+	FROM sys.check_constraints 
+) nkc
+INNER JOIN sys.columns c
+	ON nkc.object_id = c.object_id
+	AND nkc.column_id = c.column_id
+INNER JOIN sys.objects o
+	ON nkc.object_id = o.object_id
+INNER JOIN sys.types t
+	ON c.user_type_id = t.user_type_id
+	AND c.system_type_id = t.system_type_id
+INNER JOIN sys.tables tab
+	ON o.object_id = tab.object_id
+WHERE is_computed = 0  --Exclude computed columns
+	AND c.is_filestream = 0 --Exclude filestream columns
+	AND c.is_identity = 0 --Exclude identity columns
+	AND c.is_xml_document = 0 --Exclude XML columns
+	AND c.default_object_id = 0 --Exclude columns with default constraints
+	AND c.rule_object_id = 0 --Exclude columns associated with rules
+	AND c.encryption_type IS NULL --Exclude columns with encryption
+	AND o.type = 'U' --Filter on user tables
+	AND t.is_user_defined = 0 --Exclude columns with custom data types
+	AND tab.temporal_type = 0 --Exclude temporal history tables
+	FOR XML PATH('')
+) ;
+
+EXEC(@SQL) ;
+
+ALTER DATABASE " +  @[$Project::DatabaseName] + " SET MULTI_USER ;"

@@ -1,0 +1,1 @@
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned #Set execution policy to RemoteSigned

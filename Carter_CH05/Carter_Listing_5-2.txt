@@ -1,0 +1,2 @@
+@[User::NotificationBody] =  
+        @[User::NotificationBody] +  @[User::TableName] + "in database " +  @[User::DatabaseName] + ", "
